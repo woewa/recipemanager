@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rezepte</title>
+</head>
+<body>
+    <div class="container-fluid">
+        <main class="row">
+            <div class="col">
+                <h1>Rezepte</h1>
+                <div id="table-container"></div>
+            </div>
+        </main>
+    </div>
+    <script src="js/jquery.csv.min.js"></script>
+    <script src="js/csv_to_html.js"></script>
+    <script>
+        CsvToHTML.init({
+            csv_path: "files/recipes.tsv",
+            element: "table-container",
+            csv_options:{
+                separator: "\t",
+                delimiter: '"'
+            },
+            datatables_options: {
+                paging: false
+            },
+        });
+    </script>
+</body>
+</html>
