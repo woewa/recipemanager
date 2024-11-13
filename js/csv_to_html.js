@@ -8,15 +8,23 @@ CsvToHTML = {
         var csv_path = options.csv_path || "";
         var el = options.element || "table-container";
         var csv_options = options.csv_options || {};
+        var custom_formatting = options.custom_formatting || [];
         var customTemplates = {};
+        $.each(custom_formatting, function (i, v) {
+            var colIdx = v[0];
+            var func = v[1];
+            customTemplates[colIdx] = func;
+        });
 
-        var $table = $("<table class='table table-striped table-condensed' id='" + el + "-table'></table>");
+        var $table = $("<table class='table table-condensed' id='" + el + "-table'></table>");
         var $containerElement = $("#" + el);
         $containerElement.empty().append($table);
 
+        
+
         $.when($.get(csv_path)).then(
             function(data) {
-                var csvData = $.csv.toArray(data, csv_options);
+                var csvData = $.csv.toArrays(data, csv_options);
                 var $tableHead = $("<thead></thead>");
                 var csvHeaderRow = csvData[0];
                 var $tableHeadRow = $("<tr></tr>");
@@ -33,10 +41,24 @@ CsvToHTML = {
                     for (var colIdx = 0; colIdx < csvData[rowIdx].length; colIdx++) {
                         var $tableBodyRowTd = $("<td></td>");
                         var cellTemplateFunc = customTemplates[colIdx];
-                        if (cellTemplateFunc) {
-                            $tableBodyRowTd.html(cellTemplateFunc(csvData[rowIdx][colIdx]));
-                        } else {
-                            $tableBodyRowTd.text(csvData[rowIdx][colIdx]);
+
+                        if([1,2,3].includes(colIdx)){
+                            
+                            csvData[rowIdx][colIdx].split(";").forEach(item => {
+                                var $subTableBodyRow = $("<tr></tr>");
+                                var $subTableBodyRowTd = $("<td></td>");
+                                $subTableBodyRowTd.text(item);
+                                $subTableBodyRow.append($subTableBodyRowTd);
+                                $tableBodyRowTd.append($subTableBodyRow);
+                            });
+                            
+                        }
+                        else{
+                            if (cellTemplateFunc) {
+                                $tableBodyRowTd.html(cellTemplateFunc(csvData[rowIdx][colIdx]));
+                            } else {
+                                $tableBodyRowTd.text(csvData[rowIdx][colIdx].replaceAll(";", "\r\n"));
+                            }
                         }
                         $tableBodyRow.append($tableBodyRowTd);
                         $tableBody.append($tableBodyRow);
