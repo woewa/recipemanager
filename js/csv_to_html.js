@@ -1,3 +1,5 @@
+// Copyright (c) 2018 Derek Eder. Released under the MIT License.
+
 var CsvToHTML = CsvToHTML || {};
 
 CsvToHTML = {
